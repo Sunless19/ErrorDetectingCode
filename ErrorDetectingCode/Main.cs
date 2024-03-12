@@ -14,7 +14,21 @@
                     break;
                 case "CRC":
                     CRC crcInstance = new CRC();
+                    string binaryMessage = "101010";
+                    string generatorPolynomial = "01101";
 
+                    try
+                    {
+                        string crcResult = CRC.CalculateCRC(binaryMessage, generatorPolynomial);
+                        // Further processing with CRC result
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                    break;
+                default: 
+                    Console.WriteLine("Program Finished");
                     break;
 
             }
