@@ -13,14 +13,9 @@
                     pbbInstance.ProcessMessage();
                     break;
                 case "CRC":
-                    CRC crcInstance = new CRC();
-                    string binaryMessage = "101010";
-                    string generatorPolynomial = "01101";
-
                     try
                     {
-                        string crcResult = CRC.CalculateCRC(binaryMessage, generatorPolynomial);
-                        // Further processing with CRC result
+                        CRC.CalculateCRC();
                     }
                     catch (ArgumentException ex)
                     {

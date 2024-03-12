@@ -20,20 +20,19 @@ namespace ErrorDetectingCode
 {
     internal class PBB
     {
-        private string message;
-        public PBB() { }
+        private string _message;
+        public PBB() { _message = "\0"; }
         private Random random = new Random();
 
         private void Initialization()
         {
             Console.WriteLine("Enter the message (Bits)");
-            message = Console.ReadLine();
-
+            _message = Console.ReadLine();
         }
         private string Verify()
         {
             //characters of message to be bits.
-            foreach (char x in message)
+            foreach (char x in _message)
             {
                 if (x < 0 && x > 1)
                 {
@@ -41,7 +40,7 @@ namespace ErrorDetectingCode
                 }
             }
             //message multiple of 7.
-            if (message.Length % 7 != 0)
+            if (_message.Length % 7 != 0)
             {
                 return "Not Good";
             }
@@ -57,7 +56,7 @@ namespace ErrorDetectingCode
             string verificationResult = Verify();
             if (verificationResult == "good")
             {
-                int numRows = message.Length / 7;
+                int numRows = _message.Length / 7;
                 int numColumns = 7;
                 char[,] matrix = new char[numRows + 1, numColumns + 1]; // Add one extra row and column for parity bits
                 int index = 0;
@@ -67,7 +66,7 @@ namespace ErrorDetectingCode
                     int countOnes = 0; // Count the number of ones in the current row
                     for (int j = 0; j < numColumns; j++)
                     {
-                        matrix[i, j] = message[index++];
+                        matrix[i, j] = _message[index++];
                         if (matrix[i, j] == '1')
                             countOnes++;
                     }

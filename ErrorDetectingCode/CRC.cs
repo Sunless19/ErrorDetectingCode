@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,16 +20,25 @@ namespace ErrorDetectingCode
     internal class CRC
     {
         // Method to perform CRC calculation
-        public static string CalculateCRC(string binaryMessage, string generatorPolynomial)
+        public static string CalculateCRC()
         {
-            // Step 2: Check if inputs are binary and message length is greater than polynomial length
+            Console.WriteLine("Enter the binary message");
+            string binaryMessage = Console.ReadLine();
+
+            Console.WriteLine("Enter the generator polynomial");
+            string generatorPolynomial=Console.ReadLine();
+
+            // Remove leading zeros from generator polynomial
+            generatorPolynomial = generatorPolynomial.TrimStart('0');
+
+            // Check if inputs are binary and message length is greater than polynomial length
             if (!IsBinary(binaryMessage) || !IsBinary(generatorPolynomial) || binaryMessage.Length <= generatorPolynomial.Length)
             {
                 throw new ArgumentException("Invalid input.");
             }
 
             // Step 3: Extend message with zeros equal to polynomial degree
-            binaryMessage += new string('0', generatorPolynomial.Length);
+            binaryMessage += new string('0', generatorPolynomial.Length-1);
 
             // Convert generator polynomial and extended message to arrays of integers
             int[] generator = ToIntArray(generatorPolynomial);
@@ -47,17 +57,39 @@ namespace ErrorDetectingCode
                     }
                 }
             }
+            // If the message length (without leading zeros) is equal to the generator length,
+            // perform one more iteration to handle the final remainder
+            if (message.Length == generator.Length)
+            {
+                intermediateResults += " " + string.Join("", message) + Environment.NewLine;
+                for (int j = 0; j < generator.Length; j++)
+                {
+                    message[j] ^= generator[j];
+                }
+            }
 
-            // Step 6: Perform XOR again with remainder positioned under extended message
-            string remainder = string.Join("", message).Substring(binaryMessage.Length);
-            string finalResult = binaryMessage.Substring(0, binaryMessage.Length - generator.Length) + remainder;
+            // Append the last intermediate result
+            intermediateResults += " " + string.Join("", message) + Environment.NewLine;
 
             Console.WriteLine("Intermediate Results:");
             Console.WriteLine(intermediateResults);
-            Console.WriteLine("Final Result:");
-            Console.WriteLine(finalResult);
 
-            return finalResult;
+            // Perform XOR again with remainder positioned under extended message
+            string remainder = string.Join("", message).Substring(message.Length - (generator.Length - 1));
+            string finalResult = binaryMessage.Substring(0, binaryMessage.Length - generator.Length) + remainder;
+
+            // Perform XOR between extended message and final remainder
+            string finalRemainder = "";
+            for (int i = 0; i < remainder.Length; i++)
+            {
+                finalRemainder += (binaryMessage[i] ^ remainder[i]).ToString();
+            }
+
+            Console.WriteLine($"Final Remainder:{finalRemainder}");
+
+            Console.WriteLine($"Final Result:{finalResult}");
+
+            return finalRemainder;
         }
 
         // Method to check if a string contains only binary digits (0 and 1)
